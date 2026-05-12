@@ -1,6 +1,6 @@
 # BF-Particle-Tracker
 
-![BF-Particle-Tracker icon](assets/app_icon.png)
+![BF-Particle-Tracker image-processing workflow](assets/readme_workflow.png)
 
 BF-Particle-Tracker is a DearPyGUI application for brightfield microscopy particle tracking in TIFF and OME-TIFF videos.
 
