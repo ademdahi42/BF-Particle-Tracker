@@ -103,3 +103,15 @@ Radial symmetry refinement
 Subpixel center estimation
         ↓
 Radius estimation
+
+# Cite As
+
+If you use this project in academic work, please cite it as:
+
+```bibtex
+@software{dahi_bf_particle_tracker,
+  author       = {Adem DAHI},
+  title        = {BF-Particle-Tracker: Robust Brightfield Particle Tracking for Microscopy},
+  year         = {2026},
+  url          = {https://github.com/YOUR_USERNAME/BF-Particle-Tracker}
+}
