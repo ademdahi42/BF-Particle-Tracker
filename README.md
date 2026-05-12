@@ -2,7 +2,9 @@
 
 ![BF-Particle-Tracker icon](assets/app_icon.png)
 
-DearPyGUI application for microscopy particle tracking in TIFF/OME-TIFF videos.
+BF-Particle-Tracker is a DearPyGUI application for brightfield microscopy particle tracking in TIFF and OME-TIFF videos.
+
+The app is designed for an interactive workflow: load a video stack, tune preprocessing, inspect raw/preprocessed/binary/segmented images, validate the initial detection, track the particle trajectory, then export CSV results and JSON metadata.
 
 ## Launch
 
@@ -12,7 +14,7 @@ Double-click `run_app.bat`, or run:
 .venv_app\Scripts\python.exe main.py
 ```
 
-## Windows installation
+## Windows Installation
 
 For a new Windows user:
 
@@ -26,9 +28,13 @@ To create a clean zip package for sharing, run:
 powershell -ExecutionPolicy Bypass -File installer\make_release_zip.ps1
 ```
 
-The package is created in `release\BF-Particle-Tracker-windows.zip`.
+The package is created in:
 
-## Main workflow
+```text
+release\BF-Particle-Tracker-windows.zip
+```
+
+## Main Workflow
 
 1. Load one or several TIFF/OME-TIFF videos.
 2. Adjust preprocessing while comparing raw, preprocessed, binary, and enhanced binary views.
@@ -38,7 +44,13 @@ The package is created in `release\BF-Particle-Tracker-windows.zip`.
 6. Review trajectory, histograms, and stiffness estimate.
 7. Save CSV results and JSON metadata.
 
+## Documentation
+
 Full user documentation is available in:
 
 - `documentation\Particle_Tracking_User_Documentation.html`
 - `documentation\Particle_Tracking_User_Documentation.pdf`
+
+## Requirements
+
+The installer creates a local Python environment and installs the packages listed in `requirements.txt`.
