@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BF-Particle-Tracker - User Documentation</title>
+<style>
+:root { --ink:#202632; --muted:#667085; --line:#d7dde8; --accent:#1f77b4; --soft:#f5f8fc; }
+* { box-sizing:border-box; }
+body { margin:0; color:var(--ink); background:white; font-family:Arial, Helvetica, sans-serif; line-height:1.55; }
+.hero { padding:44px 56px 34px; border-bottom:1px solid var(--line); background:#f7f9fc; }
+.hero h1 { margin:0 0 8px; font-size:34px; letter-spacing:-0.02em; }
+.hero p { margin:0; color:var(--muted); font-size:16px; }
+.container { max-width:1120px; margin:0 auto; padding:34px 42px 70px; }
+.intro { border-left:4px solid var(--accent); background:var(--soft); padding:14px 16px; margin-bottom:24px; }
+.stage-grid { display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin:24px 0 34px; }
+.stage { border:1px solid var(--line); padding:8px; background:#fff; }
+.stage img { width:100%; display:block; }
+.stage span { display:block; margin-top:7px; color:var(--muted); font-size:12px; }
+section { margin:34px 0; }
+h2 { font-size:21px; margin:0 0 12px; padding-bottom:7px; border-bottom:1px solid var(--line); }
+p { margin:9px 0; }
+ul { margin:10px 0 0 22px; padding:0; }
+li { margin:6px 0; }
+.term { display:grid; grid-template-columns:230px 1fr; gap:18px; padding:10px 0; border-bottom:1px solid #edf1f6; }
+.term b { color:#101828; }
+.footer { margin-top:42px; color:var(--muted); font-size:12px; border-top:1px solid var(--line); padding-top:16px; }
+@media (max-width:900px) { .stage-grid { grid-template-columns:1fr 1fr; } .term { grid-template-columns:1fr; gap:3px; } .container { padding:24px; } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>BF-Particle-Tracker</h1>
+  <p>User guide and image-processing workflow &middot; Generated 2026-05-12</p>
+</header>
+<main class="container">
+  <div class="intro">Use this guide as a practical map of the interface. Each section explains what the controls do and how changing them affects the analysis.</div>
+  <div class="stage-grid"><div class='stage'><img src='assets/raw_image.png' alt='Raw image'><span>Raw image</span></div>
+<div class='stage'><img src='assets/preprocessed_image.png' alt='Preprocessed image'><span>Preprocessed image</span></div>
+<div class='stage'><img src='assets/binary_image.png' alt='Binary image'><span>Binary image</span></div>
+<div class='stage'><img src='assets/enhanced_binary_image.png' alt='Enhanced binary image'><span>Enhanced binary image</span></div>
+<div class='stage'><img src='assets/tracking_overlay.png' alt='Tracking overlay'><span>Tracking overlay</span></div></div>
+  <section><h2>Overview</h2>
+<p>This software analyzes microscopy TIFF and OME-TIFF videos of a single particle. It displays the raw frame and each processing stage, detects a binary blob, tracks the blob centroid over time, and exports the trajectory with the experimental metadata needed for later comparison.</p>
+<p>The detection workflow is intentionally transparent: preprocessing, thresholding, binary cleanup, region measurement, then frame-to-frame tracking. Each processing view is visible so the user can tune the result before committing to a tracking run.</p>
+</section><section><h2>Typical workflow</h2>
+<ul><li>Load one or several TIFF/OME-TIFF files. Split acquisitions can be combined into one continuous stack.</li><li>Move through the stack with the frame slider and inspect the raw image.</li><li>Adjust preprocessing while comparing the raw, preprocessed, binary, and enhanced binary panels.</li><li>Run detection on the current frame and set it as the initial reference.</li><li>Start tracking, monitor the overlay and plots, then stop if the detection becomes unstable.</li><li>Save CSV measurements, JSON metadata, and optional diagnostic images.</li></ul>
+</section><section><h2>Image-processing steps</h2>
+<div class='term'><b>Raw image</b><span>The selected frame is read from the TIFF stack. If a processing square is enabled, only that crop is passed to the image-processing and tracking pipeline.</span></div>
+<div class='term'><b>Preprocessing</b><span>Intensity operations improve contrast between the particle and the background. Available operations include grayscale conversion, background correction, smoothing, top-hat filtering, inversion, percentile normalization, gamma correction, and CLAHE.</span></div>
+<div class='term'><b>Binary segmentation</b><span>The preprocessed image is thresholded. Otsu mode estimates the cutoff automatically; manual mode lets the user choose the cutoff directly.</span></div>
+<div class='term'><b>Morphological cleanup</b><span>Small particles, holes, and rough boundaries are cleaned using object-size filtering, opening, closing, and hole filling.</span></div>
+<div class='term'><b>Blob measurement</b><span>Connected regions are measured with region properties. The selected blob provides the centroid, equivalent radius, area, eccentricity, and axis lengths.</span></div>
+<div class='term'><b>Tracking</b><span>The previous particle position guides the next frame. The trajectory is stored in absolute and relative coordinates, with the initial detection as the reference point.</span></div>
+</section><section><h2>Acquisition and calibration</h2>
+<div class='term'><b>Particle ID</b><span>A sample identifier saved with the results. It helps link trajectories to materials, particles, or experimental conditions.</span></div>
+<div class='term'><b>Particle diameter</b><span>Physical diameter used to convert pixels into micrometers from the detected radius. Changing it rescales positions, radius, sigma, and stiffness outputs.</span></div>
+<div class='term'><b>Frame interval</b><span>Time between frames. It defines the time axis in exported data and time-series plots.</span></div>
+<div class='term'><b>Temperature</b><span>Used in the equipartition stiffness calculation through kBT. Higher temperature increases the reported stiffness for the same positional variance.</span></div>
+<div class='term'><b>Frames to track</b><span>Controls how much of the stack is processed. Longer tracks improve statistics but take more time and are more sensitive to drift or loss of detection.</span></div>
+<div class='term'><b>Wavenumber, power, note</b><span>Experimental metadata saved in the JSON file. These fields do not change the detection, but they make later comparison between experiments easier.</span></div>
+</section><section><h2>Import and processing region</h2>
+<div class='term'><b>Fast lazy import</b><span>Opens large stacks quickly by reading frames only when needed. This makes browsing faster; tracking can still preload the selected frame range for speed.</span></div>
+<div class='term'><b>Multiple-file import</b><span>Combines split files into a single virtual video when frame dimensions match. This is useful when microscope acquisitions are saved in parts.</span></div>
+<div class='term'><b>Processing square</b><span>Restricts computation to a square crop. This can speed up analysis and reduce false detections from distant artifacts.</span></div>
+<div class='term'><b>Square position and size</b><span>Moving the square changes the region analyzed. A smaller square is faster and cleaner, but must remain large enough to contain the particle throughout tracking.</span></div>
+</section><section><h2>Preprocessing controls</h2>
+<div class='term'><b>Convert to grayscale</b><span>Uses a single intensity channel for processing. Keep enabled for most bright-field or grayscale microscopy data.</span></div>
+<div class='term'><b>Background correction</b><span>Removes slow illumination variation. Subtraction highlights local contrast; division compensates shading and uneven illumination.</span></div>
+<div class='term'><b>Background sigma</b><span>Sets the spatial scale of the estimated background. A larger scale preserves broad particle features; a smaller scale removes more local structure.</span></div>
+<div class='term'><b>Gaussian smoothing</b><span>Suppresses high-frequency noise before segmentation. Too much smoothing can soften the particle edge.</span></div>
+<div class='term'><b>Top-hat</b><span>Enhances local objects relative to background. The radius controls the size of features treated as background.</span></div>
+<div class='term'><b>Invert image</b><span>Swaps dark and bright features. Use when the particle becomes easier to segment after contrast inversion.</span></div>
+<div class='term'><b>Percentile normalization</b><span>Clips extreme intensities before rescaling. This stabilizes contrast, but very strong clipping can saturate useful detail.</span></div>
+<div class='term'><b>Gamma correction</b><span>Changes mid-tone contrast. Lower gamma brightens weak structures; higher gamma emphasizes strong bright regions.</span></div>
+<div class='term'><b>CLAHE</b><span>Applies local adaptive contrast enhancement. It can reveal weak particles, but excessive local contrast may amplify noise.</span></div>
+</section><section><h2>Blob and binary controls</h2>
+<div class='term'><b>Blob top-hat radius</b><span>Controls background removal in the blob-specific pipeline. It changes how strongly the particle is isolated before thresholding.</span></div>
+<div class='term'><b>Invert before top-hat</b><span>Useful when the particle is dark in the raw image but should become bright for segmentation.</span></div>
+<div class='term'><b>Threshold method</b><span>Otsu is automatic and convenient; manual mode is useful when background, halos, or noise confuse the automatic threshold.</span></div>
+<div class='term'><b>Manual threshold</b><span>Foreground cutoff used in manual mode. Raising it keeps stronger pixels only; lowering it includes weaker signal and possibly noise.</span></div>
+<div class='term'><b>Area limits</b><span>Reject objects that are too small or too large. This helps remove dust, fragments, merged blobs, or background artifacts.</span></div>
+<div class='term'><b>Opening radius</b><span>Removes small protrusions and isolated pixels. Too much opening can erode the particle.</span></div>
+<div class='term'><b>Closing radius</b><span>Fills small gaps and smooths boundaries. Too much closing can merge nearby regions.</span></div>
+<div class='term'><b>Hole filling</b><span>Fills internal holes to create a more compact blob, often closer to a disk-like particle.</span></div>
+<div class='term'><b>Choose by prediction</b><span>During tracking, selects the region nearest to the previous position instead of relying only on size.</span></div>
+</section><section><h2>Tracking, plots, and exports</h2>
+<div class='term'><b>Initial detection</b><span>Defines the reference point. Relative x and y trajectories are computed from this initial validated position.</span></div>
+<div class='term'><b>Maximum displacement</b><span>Rejects jumps that are too far from the previous accepted position. Lower values are stricter; higher values tolerate faster motion.</span></div>
+<div class='term'><b>Keep radius constant</b><span>Stabilizes the pixel-to-micrometer calibration by avoiding frame-to-frame radius fluctuations.</span></div>
+<div class='term'><b>Overlay</b><span>Draws the detected center, radius, and trajectory on the image. This is a visual check and does not change the calculations.</span></div>
+<div class='term'><b>Histograms and time traces</b><span>Show relative x, y, radius, and temporal behavior. They help reveal drift, segmentation failures, and sudden jumps.</span></div>
+<div class='term'><b>Stiffness estimate</b><span>Computed after tracking from the variance of the detrended relative x trajectory using the equipartition relation.</span></div>
+<div class='term'><b>CSV export</b><span>Stores frame-by-frame measurements: time, absolute and relative position, radius, detection status, quality, and method.</span></div>
+<div class='term'><b>JSON export</b><span>Stores metadata and the current settings at save time, so the file reflects the parameters used for interpretation.</span></div>
+</section>
+  <div class="footer">BF-Particle-Tracker documentation. Keep this file together with the <code>assets</code> folder.</div>
+</main>
+</body>
+</html>

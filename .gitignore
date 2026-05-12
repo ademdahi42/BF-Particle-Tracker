@@ -1,0 +1,20 @@
+.venv_app/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local user state
+app_user_settings.json
+
+# Generated packages and temporary archives
+release/
+_archive_cleanup_*/
+
+# Local/experimental folders not required by the app
+blender_optical_trap/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
