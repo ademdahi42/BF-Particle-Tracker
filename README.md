@@ -103,9 +103,3 @@ Radial symmetry refinement
 Subpixel center estimation
         ↓
 Radius estimation
-
-
-  title        = {BF-Particle-Tracker: Robust Brightfield Particle Tracking for Microscopy},
-  year         = {2026},
-  url          = {https://github.com/YOUR_USERNAME/BF-Particle-Tracker}
-}
