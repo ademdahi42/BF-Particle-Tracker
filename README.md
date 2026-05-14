@@ -6,28 +6,29 @@ BF-Particle-Tracker is a DearPyGUI application for brightfield microscopy partic
 
 The app is designed for an interactive workflow: load a video stack, tune preprocessing, inspect raw/preprocessed/binary/segmented images, validate the initial detection, track the particle trajectory, then export CSV results and JSON metadata.
 
-## Launch
-
-Double-click `run_app.bat`, or run:
-
-```bat
-.venv_app\Scripts\python.exe main.py
-```
-
 ## Windows Installation
 
 For a new Windows user:
 
 1. Unzip the app folder.
-2. Run `BF-Particle-Tracker-Installer.exe` if it is included in the release.
-3. Launch `BF-Particle-Tracker` from the Desktop shortcut.
+2. Install Python 3.10 or newer from <https://www.python.org/downloads/windows/>.
+3. During Python installation, enable **Add python.exe to PATH**.
+4. Double-click `installer\install.bat`.
+5. Launch `BF-Particle-Tracker` from the Desktop shortcut, or double-click `run_app.bat`.
 
-If the installer executable is not included, run `installer\install.bat` as a fallback.
+If `.bat` scripts are blocked by local IT policy, run the Python installer script instead:
+
+```bat
+python installer\install_no_exe.py
+```
+
+The installer creates a local `.venv_app` environment inside the app folder. It does not install packages globally on the computer.
+
+## Sharing The App
 
 To create a clean zip package for sharing, run:
 
 ```bat
-powershell -ExecutionPolicy Bypass -File installer\build_inno_installer.ps1
 powershell -ExecutionPolicy Bypass -File installer\make_release_zip.ps1
 ```
 
@@ -35,6 +36,25 @@ The package is created in:
 
 ```text
 release\BF-Particle-Tracker-windows.zip
+```
+
+The person receiving the zip should unzip it, then run:
+
+```text
+installer\install.bat
+```
+
+## Launch
+
+After installation:
+
+1. Launch `BF-Particle-Tracker` from the Desktop shortcut.
+2. Or double-click `run_app.bat`.
+
+Manual launch:
+
+```bat
+.venv_app\Scripts\python.exe main.py
 ```
 
 ## Main Workflow
@@ -56,4 +76,4 @@ Full user documentation is available in:
 
 ## Requirements
 
-The installer creates a local Python environment and installs the packages listed in `requirements.txt`.
+Dependencies are listed in `requirements.txt` and are installed into the local `.venv_app` folder.

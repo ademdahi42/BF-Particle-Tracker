@@ -5,7 +5,6 @@ $ProjectRoot = Split-Path -Parent $InstallerDir
 $ReleaseDir = Join-Path $ProjectRoot "release"
 $PackageRoot = Join-Path $ReleaseDir "BF-Particle-Tracker"
 $ZipPath = Join-Path $ReleaseDir "BF-Particle-Tracker-windows.zip"
-$InnoInstallerExe = Join-Path $ReleaseDir "BF-Particle-Tracker-Installer.exe"
 
 if (Test-Path $PackageRoot) {
     Remove-Item -LiteralPath $PackageRoot -Recurse -Force
@@ -29,10 +28,6 @@ foreach ($item in $items) {
     if (Test-Path $source) {
         Copy-Item -LiteralPath $source -Destination $PackageRoot -Recurse -Force
     }
-}
-
-if (Test-Path $InnoInstallerExe) {
-    Copy-Item -LiteralPath $InnoInstallerExe -Destination (Join-Path $PackageRoot "BF-Particle-Tracker-Installer.exe") -Force
 }
 
 Get-ChildItem -LiteralPath $PackageRoot -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force
