@@ -10,6 +10,9 @@ app_user_settings.json
 release/
 _archive_cleanup_*/
 
+# Inno Setup build output
+installer/output/
+
 # Local/experimental folders not required by the app
 blender_optical_trap/
 

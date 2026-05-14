@@ -19,13 +19,15 @@ Double-click `run_app.bat`, or run:
 For a new Windows user:
 
 1. Unzip the app folder.
-2. Run `BF-Particle-Tracker-Setup.exe` or `installer\BF-Particle-Tracker-Setup.exe`.
+2. Run `BF-Particle-Tracker-Installer.exe` if it is included in the release.
 3. Launch `BF-Particle-Tracker` from the Desktop shortcut.
+
+If the installer executable is not included, run `installer\install.bat` as a fallback.
 
 To create a clean zip package for sharing, run:
 
 ```bat
-powershell -ExecutionPolicy Bypass -File installer\build_setup_exe.ps1
+powershell -ExecutionPolicy Bypass -File installer\build_inno_installer.ps1
 powershell -ExecutionPolicy Bypass -File installer\make_release_zip.ps1
 ```
 
