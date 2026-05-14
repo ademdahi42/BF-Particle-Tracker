@@ -10,20 +10,39 @@ $Icon = Join-Path $ProjectRoot "assets\app_icon.ico"
 
 function Find-PythonCommand {
     $candidates = @(
-        "py -3.11",
-        "py -3",
-        "python"
+        @{ Command = "py"; Args = @("-3.11") },
+        @{ Command = "py"; Args = @("-3") },
+        @{ Command = "python"; Args = @() }
     )
 
     foreach ($candidate in $candidates) {
-        $testCommand = "$candidate -c `"import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)`""
-        cmd /c $testCommand 1>$null 2>$null
-        if ($LASTEXITCODE -eq 0) {
-            return $candidate
+        $command = $candidate.Command
+        $baseArgs = $candidate.Args
+        $versionArgs = $baseArgs + @("-c", "import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)")
+
+        try {
+            & $command @versionArgs 1>$null 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                return $candidate
+            }
+        } catch {
+            continue
         }
     }
 
     throw "Python 3.10 or newer was not found. Install Python from https://www.python.org/downloads/windows/ and enable 'Add python.exe to PATH'."
+}
+
+function Invoke-Python {
+    param(
+        [Parameter(Mandatory = $true)] $PythonCandidate,
+        [Parameter(ValueFromRemainingArguments = $true)] [string[]] $PythonArgs
+    )
+
+    & $PythonCandidate.Command @($PythonCandidate.Args + $PythonArgs)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Python command failed: $($PythonCandidate.Command) $($PythonCandidate.Args -join ' ') $($PythonArgs -join ' ')"
+    }
 }
 
 if (-not (Test-Path $Requirements)) {
@@ -34,14 +53,11 @@ Write-Host "Installing $AppName"
 Write-Host "Project folder: $ProjectRoot"
 
 $PythonCommand = Find-PythonCommand
-Write-Host "Using Python command: $PythonCommand"
+Write-Host "Using Python command: $($PythonCommand.Command) $($PythonCommand.Args -join ' ')"
 
 if (-not (Test-Path $VenvDir)) {
     Write-Host "Creating local Python environment..."
-    cmd /c "$PythonCommand -m venv `"$VenvDir`""
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not create Python environment."
-    }
+    Invoke-Python $PythonCommand -m venv "$VenvDir"
 } else {
     Write-Host "Local Python environment already exists."
 }

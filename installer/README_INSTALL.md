@@ -6,10 +6,13 @@ This folder contains a simple Windows installer for BF-Particle-Tracker.
 
 1. Install Python 3.10 or newer from <https://www.python.org/downloads/windows/>.
 2. During Python installation, enable **Add python.exe to PATH**.
-3. Double-click `install.bat`.
+3. Double-click `BF-Particle-Tracker-Setup.exe`.
 4. Launch the app from the Desktop shortcut named `BF-Particle-Tracker`.
 
 The installer creates a local Python environment inside the application folder and installs the packages listed in `requirements.txt`.
+
+If Windows blocks the executable the first time, choose **More info** and then **Run anyway**.
+If the executable is not available, `install.bat` is kept as a fallback installer.
 
 ## Launch
 
@@ -24,6 +27,7 @@ After installation, use either:
 From PowerShell:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File installer\build_setup_exe.ps1
 powershell -ExecutionPolicy Bypass -File installer\make_release_zip.ps1
 ```
 
@@ -33,7 +37,7 @@ This creates:
 release\BF-Particle-Tracker-windows.zip
 ```
 
-Send that zip file to another Windows user. They should unzip it, then run `installer\install.bat`.
+Send that zip file to another Windows user. They should unzip it, then run `BF-Particle-Tracker-Setup.exe` or `installer\BF-Particle-Tracker-Setup.exe`.
 
 ## Uninstall
 
