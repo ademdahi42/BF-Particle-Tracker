@@ -16,12 +16,6 @@ For a new Windows user:
 4. Double-click `installer\install.bat`.
 5. Launch `BF-Particle-Tracker` from the Desktop shortcut, or double-click `run_app.bat`.
 
-If `.bat` scripts are blocked by local IT policy, run the Python installer script instead:
-
-```bat
-python installer\install_no_exe.py
-```
-
 The installer creates a local `.venv_app` environment inside the app folder. It does not install packages globally on the computer.
 
 ## Sharing The App

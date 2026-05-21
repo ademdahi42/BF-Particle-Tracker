@@ -1,6 +1,6 @@
 # BF-Particle-Tracker Script Installer
 
-BF-Particle-Tracker is distributed as a normal project folder with script-based installation. This avoids unsigned `.exe` installers, which are often blocked on managed lab computers.
+BF-Particle-Tracker is distributed as a normal project folder with a script-based Windows installer. This avoids unsigned `.exe` installers, which are often blocked on managed lab computers.
 
 ## Install
 
@@ -14,16 +14,6 @@ installer\install.bat
 ```
 
 The script creates a local `.venv_app` environment inside the app folder and installs the packages listed in `requirements.txt`.
-
-## If `.bat` Is Blocked
-
-Run the Python installer script instead:
-
-```bat
-python installer\install_no_exe.py
-```
-
-This does the same installation steps without using an executable installer.
 
 ## Launch
 
