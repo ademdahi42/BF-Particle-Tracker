@@ -352,15 +352,33 @@ def preprocess_blob_image(frame, params, prediction=None):
     enhanced_binary = enhanced_debug["enhanced_binary"].astype(bool)
 
     labeled = label(enhanced_binary)
-    regions = regionprops(labeled, intensity_image=preprocessed)
-    regions = [region for region in regions if min_area <= region.area <= max_area]
+    all_regions = regionprops(labeled, intensity_image=preprocessed)
+    regions = [region for region in all_regions if min_area <= region.area <= max_area]
 
     if len(regions) == 0:
+        if len(all_regions) > 0:
+            largest_region = max(all_regions, key=lambda region: region.area)
+            reason = "blob_area_out_of_range"
+            enhanced_display = np.stack(
+                [enhanced_binary.astype(np.float32)] * 3,
+                axis=-1,
+            )
+            extra_debug = {
+                "largest_region_area": float(largest_region.area),
+                "largest_region_radius": float(largest_region.equivalent_diameter / 2.0),
+                "min_area": float(min_area),
+                "max_area": float(max_area),
+            }
+        else:
+            reason = enhanced_debug.get("reason", "no_blob_region")
+            enhanced_display = enhanced_debug["enhanced_display"]
+            extra_debug = {}
+
         debug = {
             "preprocessed": preprocessed.astype(np.float32),
             "binary": binary.astype(np.float32),
             "enhanced_binary": enhanced_debug["enhanced_binary"],
-            "enhanced_display": enhanced_debug["enhanced_display"],
+            "enhanced_display": enhanced_display,
             "labeled": labeled,
             "selected_region": None,
             "threshold_value": threshold_value,
@@ -369,7 +387,8 @@ def preprocess_blob_image(frame, params, prediction=None):
                 for key, value in enhanced_debug.items()
                 if key.startswith("blob_")
             },
-            "reason": enhanced_debug.get("reason", "no_blob_region"),
+            **extra_debug,
+            "reason": reason,
         }
         return None, debug
 

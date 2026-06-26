@@ -1,4 +1,5 @@
 .venv_app/
+.codegraph/
 __pycache__/
 *.py[cod]
 *$py.class

@@ -4,7 +4,7 @@ BF-Particle-Tracker is distributed as a normal project folder with a script-base
 
 ## Install
 
-1. Install Python 3.10 or newer from <https://www.python.org/downloads/windows/>.
+1. Install Python 3.12 64-bit from <https://www.python.org/downloads/windows/>.
 2. During Python installation, enable **Add python.exe to PATH**.
 3. Unzip the BF-Particle-Tracker folder.
 4. Double-click:
@@ -14,6 +14,21 @@ installer\install.bat
 ```
 
 The script creates a local `.venv_app` environment inside the app folder and installs the packages listed in `requirements.txt`.
+
+## If Windows Blocks The Batch Files
+
+Windows may block `.bat` files that came from a downloaded zip or a Git clone. If you see a security warning, unblock the app folder, then run the installer again:
+
+```powershell
+cd "C:\path\to\BF-Particle-Tracker"
+Get-ChildItem -Recurse | Unblock-File
+```
+
+You can also right-click the downloaded zip before extracting it, choose **Properties**, check **Unblock**, then extract it again.
+
+## Python Version
+
+Use Python 3.10, 3.11, or 3.12 64-bit. Python 3.12 is recommended. The installer rejects newer Python versions because this app pins scientific packages that may not install cleanly there.
 
 ## Launch
 

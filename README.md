@@ -11,12 +11,27 @@ The app is designed for an interactive workflow: load a video stack, tune prepro
 For a new Windows user:
 
 1. Unzip the app folder.
-2. Install Python 3.10 or newer from <https://www.python.org/downloads/windows/>.
+2. Install Python 3.12 64-bit from <https://www.python.org/downloads/windows/>.
 3. During Python installation, enable **Add python.exe to PATH**.
 4. Double-click `installer\install.bat`.
 5. Launch `BF-Particle-Tracker` from the Desktop shortcut, or double-click `run_app.bat`.
 
 The installer creates a local `.venv_app` environment inside the app folder. It does not install packages globally on the computer.
+
+### If Windows Blocks The `.bat` Files
+
+Windows may block batch files that came from a downloaded zip or a Git clone. If you see a security warning, unblock the app folder, then run the installer again:
+
+```powershell
+cd "C:\path\to\BF-Particle-Tracker"
+Get-ChildItem -Recurse | Unblock-File
+```
+
+You can also right-click the downloaded zip before extracting it, choose **Properties**, check **Unblock**, then extract it again.
+
+### Python Version
+
+Use Python 3.10, 3.11, or 3.12 64-bit. Python 3.12 is recommended. The installer rejects newer Python versions because this app pins scientific packages that may not install cleanly there.
 
 ## Sharing The App
 

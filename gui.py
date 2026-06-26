@@ -21,6 +21,7 @@ from processing import (
     compute_stiffness_equipartition,
     preprocess_blob_image,
     preprocess_frame,
+    to_grayscale,
 )
 
 
@@ -193,6 +194,28 @@ def set_status(message, level="info"):
             dpg.bind_item_theme("status_text", THEME_MUTED_TEXT)
 
 
+def format_blob_failure_status(debug):
+    if not debug:
+        return "Blob detection: no region selected. Reason: unknown"
+
+    reason = debug.get("reason", "unknown")
+    if reason == "no_blob_found":
+        return "No blob found in enhanced binary image"
+
+    if reason == "blob_area_out_of_range":
+        area = debug.get("largest_region_area")
+        min_area = debug.get("min_area")
+        max_area = debug.get("max_area")
+        if area is not None and min_area is not None and max_area is not None:
+            return (
+                "Blob detection: region rejected by area filter | "
+                f"area={area:.0f} px, allowed={min_area:.0f}-{max_area:.0f} px"
+            )
+        return "Blob detection: region rejected by area filter"
+
+    return f"Blob detection: no region selected. Reason: {reason}"
+
+
 def native_open_video_dialog():
     root = tk.Tk()
     root.withdraw()
@@ -353,6 +376,15 @@ def draw_trajectory_overlay(image, result=None, records=None, show_detection=Tru
             rgba[y, x, :3] = alpha * color + (1.0 - alpha) * rgba[y, x, :3]
 
     return rgba.astype(np.float32)
+
+
+def prepare_raw_display_frame(frame, params):
+    if params.get("convert_to_grayscale", True):
+        try:
+            return to_grayscale(frame)
+        except ValueError:
+            return frame
+    return frame
 
 
 def coerce_tiff_to_frame_stack(array, axes=None):
@@ -711,7 +743,7 @@ def display_frame_result_records(frame, result=None, records=None, params=None):
     if params is None:
         params = get_preprocessing_parameters()
     display_frame, square = crop_frame_with_processing_square(frame, params)
-    return display_frame, result, records, square
+    return prepare_raw_display_frame(display_frame, params), result, records, square
 
 
 def update_texture(texture_tag, image):
@@ -879,7 +911,7 @@ def apply_preprocessing_callback(sender=None, app_data=None):
         update_texture(
             RAW_TEXTURE_TAG,
             draw_trajectory_overlay(
-                processing_frame,
+                prepare_raw_display_frame(processing_frame, params),
                 current_blob_result,
                 tracking_records,
                 show_detection=params.get("show_detection_overlay", True),
@@ -907,8 +939,7 @@ def apply_preprocessing_callback(sender=None, app_data=None):
                 )
             )
         elif params.get("use_blob_detection", False):
-            reason = current_blob_debug.get("reason", "unknown") if current_blob_debug else "unknown"
-            set_status("No blob found in enhanced binary image" if reason == "no_blob_found" else f"Blob detection: no region selected. Reason: {reason}")
+            set_status(format_blob_failure_status(current_blob_debug), level="warning")
         else:
             set_status("Preprocessing applied.")
     except Exception as exc:
@@ -950,7 +981,7 @@ def run_single_detection_callback():
         update_texture(BINARY_TEXTURE_TAG, debug.get("binary", np.zeros_like(current_preprocessed)))
         enhanced_key = "enhanced_display" if params.get("show_detection_overlay", True) else "enhanced_binary"
         update_texture(ENHANCED_BINARY_TEXTURE_TAG, debug.get(enhanced_key, np.zeros_like(current_preprocessed)))
-        set_status(f"No blob found. Reason: {debug.get('reason', 'unknown')}")
+        set_status(format_blob_failure_status(debug), level="warning")
         return
 
     dpg.set_value("use_blob_detection_input", True)
@@ -1719,7 +1750,7 @@ def save_images_callback():
         enhanced = current_enhanced_binary if current_enhanced_binary is not None else np.zeros_like(preprocessed)
 
     raw_display = draw_trajectory_overlay(
-        processing_frame,
+        prepare_raw_display_frame(processing_frame, params),
         result,
         tracking_records,
         show_detection=params.get("show_detection_overlay", True),
